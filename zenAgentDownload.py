@@ -39,8 +39,9 @@ def compile_agents_into_csv(instances):
         print("No instances loaded.")
         return
 
-    fieldnames = ['Name', 'Email', 'LastLogin', 'DaysSinceLastLogin', 'UserType', 'RoleType'] + [inst['subdomain'] for inst in instances]
+    fieldnames = ['Name', 'Email', 'LastLogin', 'DaysSinceLastLogin', 'UserType', 'RoleType', 'AppendDate'] + [inst['subdomain'] for inst in instances]
     file_exists = os.path.exists('agents.csv')
+    today_date = datetime.now().strftime("%Y-%m-%d")
 
     with open('agents.csv', 'a', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -57,7 +58,8 @@ def compile_agents_into_csv(instances):
                         'LastLogin': agent['last_login_at'],
                         'DaysSinceLastLogin': days_since_last_login(agent['last_login_at']),
                         'UserType': agent['role'],
-                        'RoleType': agent['role_type']
+                        'RoleType': agent['role_type'],
+                        'AppendDate': today_date
                     }
                     for inst in instances:
                         row[inst['subdomain']] = ''
