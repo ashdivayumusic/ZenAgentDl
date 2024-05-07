@@ -1,3 +1,4 @@
+import os
 import requests
 import csv
 from datetime import datetime, timedelta
@@ -30,7 +31,7 @@ def days_since_last_login(last_login):
         delta = datetime.now() - last_login_date
         if delta < timedelta(days=1):
             return '0'
-        return delta.days
+        return str(delta.days)
     return 'N/A'
 
 def compile_agents_into_csv(instances):
@@ -39,10 +40,12 @@ def compile_agents_into_csv(instances):
         return
 
     fieldnames = ['Name', 'Email', 'LastLogin', 'DaysSinceLastLogin', 'UserType', 'RoleType'] + [inst['subdomain'] for inst in instances]
+    file_exists = os.path.exists('agents.csv')
 
-    with open('agents.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    with open('agents.csv', 'a', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
+        if not file_exists:
+            writer.writeheader()
         
         for instance in instances:
             agents = get_agents(instance)
